@@ -23,3 +23,19 @@
 17. error1：Option<T>是个枚举，有两种枚举类型，Some()和None。Result<T, E>也是枚举，有Ok(T)和Err(E)。这些泛型约束都是sized，也就是基本没有要求。函数签名出现引用，要标记生命周期。
 18. error5：?会在出错时提前返回出错的函数签名中给出的错误类型，而非调用处所处函数签名中的类型。match中可以用“x if x < 0”这种形式限制匹配。动态错误类型Box<dyn error::Error>
 19. error6：使用map_err可以进行错误转换。利用编写错误转换函数的方式进行转换。
+## 2022/7/5
+今天继续完成了Rust-lang Lab Test based on Rustlings剩下的19个训练，涉及类型转换还有错误处理的地方还是蛮难的，接下来要针对性的学一下这些地方。除此之外今天提前看了看《计算机组成与设计（RISC-V版）》一、二章。
+
+今天做题找到的一些薄弱点：
+
+1. iterators2：三种迭代iter()、iter_mut()、into_iter()。
+2. iterators3：map迭代适配器，将某个迭代器转换成另一种迭代器。collect()会把包含Result的向量生成的迭代器收集成Result包含的向量，可以使用collect::<Vec<Result<i32, DivisionError>>>()来指定收集的结果类型。
+3. iterators4：(1..=num).product()可算阶乘。发现我对标准库中的iter了解还是太少了。
+4. iterators5：map可以嵌套着使用，不确定是不是有更好的写法，不过暂时写的collection.iter().map(|c| c.values().map(|v| {if v == &value { 1 } else { 0 }}).sum::<usize>()).sum()通过了。
+5. threads1：线程还有内部可变性的知识还需要加强。
+6. macros2：宏不能先只声明，在后面再定义。
+7. macros3：宏匹配分支间由;分隔。
+8. quiz4：才知道字符串拼接可以直接用 + 或者format!，用了好久的push_str。。。
+9. try_from_into：区间可以用contains()来判断元素是否在其中。
+10. as_ref_mut：转换方面我也不是很熟。这里要求在函数签名中限制泛型为可以转换为str才行，因为要用到.as_ref().chars()和.as_bytes().len()，所以增加<T: AsRef<str>>。
+11. advanced_errs1：convert确实要好好看一下了。实现 AsRef trait 以实现廉价的引用到引用转换、实现 AsMut trait 进行廉价的变量到变量转换、实现 From trait 以进行值到值的转换、实现 Into trait，以便将值转换为当前 crate 之外的类型。
