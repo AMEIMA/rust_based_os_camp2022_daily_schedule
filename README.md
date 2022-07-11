@@ -247,3 +247,29 @@ core库部分杂记：
 9. trace_macros!(true)每当一个宏被展开时会启用一个编译器信息。在展开后使用trace_macros!(false)来关闭它。
 10. assert断言宏，可以在第二个参数以及后续参数使用格式化输出给出断言错误提示内容，assert_eq和assert_ne也是，此外加上debug_前缀则只会在debug模式执行断言
 
+## 2022/7/11
+
+1. cfg! 与 #[cfg] 不同，它不会删除任何代码，只会评估为 true 或 false。 例如，当将 cfg! 用作条件时，无论 cfg! 正在评估什么，if/else 表达式中的所有块都必须有效。
+2. column!、line!、file!提供当前位置信息
+3. compile_error!拉起一个编译错误
+4. concat连接&'static str
+5. env!编译器获取环境变量.option_env!如果在编译时存在指定的环境变量，它将扩展为 Option<&'static str> 类型的表达式，其值是环境变量的值的 Some。 如果不存在环境变量，则它将扩展为 None。
+6. format_args!作为format!, write!, println!等宏的基础
+7. include!文件包含、include_bytes!字节包含、include_str!字符串包含
+8. matches!返回给定表达式是否与任何给定模式匹配。
+9. module_path扩展为代表当前模块路径的字符串。当前模块路径可以被认为是引回到 crate root 的模块层次结构。 返回路径的第一部分是当前正在编译的 crate 的名称。
+10. stringify对其参数进行字符串化。
+11. unimplemented! 和 todo! 之间的区别在于，尽管 todo! 传达了稍后实现该功能的意图，并且消息为 “not yet implemented”，但 unimplemented! 并未提出任何此类声明。 它的消息是 “not implemented”。用了这些函数会发生panic。
+12. unreachable!不可访问代码，访问即panic。 unreachable! 只是 panic! 的简写，带有固定的、特定的消息。
+13. write!和writeln!将格式化的数据写入缓冲区。
+
+接下来看原生类型部分
+
+1. never：永远不会解析为任何值的计算类型。可用于分支中break和continue。实现了Clone、Copy、Debug、Display、Hash、Ord、Eq、PartialOrd、PartialEq。
+2. array：实现了map（[T; N]->[U; N]）、zip（[U; N]->[(T, U); N]）、as_slice（相当于&a[..]）、as_mut_slice（相当于&mut a[..]）、each_ref或each_mut（把数组引用里的元素全变成引用，方便在内部元素不是Copy时map发生移动）、split_array_ref或split_array_mut（切分数组引用成两个引用）。如果元素类型允许，则任何大小的数组都将实现以下 traits：Copy、Clone、Debug、IntoIterator、PartialEq、PartialOrd、Eq、Ord、Hash、AsRef、AsMut、Borrow、 BorrowMut
+3. bool：bool 实现了各种 traits，例如 BitAnd、BitOr、Not 等，允许我们使用 &、| 和 ! 执行布尔运算。then_some（如果 bool 是 true，则返回 Some(f())，否则返回 None。）、then（如果 bool 是 true，则返回 Some(f())，否则返回 None。）
+4. char：一些从utf解码的函数或编码到utf的函数、一些utf编码占用长度的函数、一些转义特殊字符的函数、一些大小写转换函数、一些判断是不是某类字符的函数
+5. 整型：提供了一些绝对值abs、平方pow、取对log等函数。一些检查函数、一些溢出处理函数、和bytes的转换函数。
+6. 浮点型：正负无穷、NaN等特殊值常量。clamp限制到一定区间、一些检查函数、和bytes的转换函数。
+7. tuple：没有非trait实现，全都是trait
+8. fn：函数指针，普通函数指针是通过强制转换不能捕获环境的普通函数或闭包而获得的。普通 fn() 函数指针只能指向安全函数，而 unsafe fn() 函数指针可以指向安全或不安全函数。指向带有 C ABI 的函数的指针的类型为extern "C" fn()。
