@@ -273,3 +273,77 @@ core库部分杂记：
 6. 浮点型：正负无穷、NaN等特殊值常量。clamp限制到一定区间、一些检查函数、和bytes的转换函数。
 7. tuple：没有非trait实现，全都是trait
 8. fn：函数指针，普通函数指针是通过强制转换不能捕获环境的普通函数或闭包而获得的。普通 fn() 函数指针只能指向安全函数，而 unsafe fn() 函数指针可以指向安全或不安全函数。指向带有 C ABI 的函数的指针的类型为extern "C" fn()。
+
+## 2022/7/12
+
+继续看了原生类型部分：
+
+1. pointer：裸指针。提供一些指针计算和指针转换函数。
+2. reference：引用。&mut T 引用可以自由强制转换为 &T 引用类型相同的引用，生命周期较长的引用可以自由强制转换为较短的引用。
+3. slice：切片是一个内存块的视图，表示为一个指针和一个长度。
+4. str：实现了一些字符串切片的转换、查找、拆分、判断函数。
+5. unit：()
+
+## 2022/7/13
+
+开始看core的模块：
+1. assert_matches：有俩宏，看起来和assert宏也没什么区别。
+2. async_iter（streams）：异步迭代器。模块分为traits、function、structs三部分。
+	* trait：里面就一个Asynclterator的trait，需要手动实现poll_next()。
+		1) poll_next()返回Poll::Pending未准备好、Poll::Ready(Some(val))准备好了、Poll::Ready(None)已经空了三种枚举类型。
+		2) 提供size_hint()返回剩余迭代器上下界数组(usize, Option<usize>)
+	* fn：提供了一个把普通迭代器转换为异步迭代器的函数from_iter()
+	* structs：由from_iter()产生的类型
+3. intrinsics：内置函数，这个模块里定义的都是函数
+4. lazy：惰性求值，内含两个结构体，Lazy是个首次访问时才会初始化的值，OnceCell是一次写入的Cell
+5. panicking：对core的panic支持。
+6. simd：便携式SIMD模块。
+7. unicode：unicode支持。
+8. alloc：内存分配相关。分为traits、structs、type definitions。可以自行实现内存分配器，然后用#[global_allocator]标记它。
+9. any：dyn Any用于运行时反射，测试某个值会是什么类型。大多数类型都实现了 Any。但是，任何包含非 `static’ 引用的类型都不会。
+10. arch：包含两个用来使用内联汇编的宏asm和global_asm。以及各个架构对应的模块，里面包含架构的内部函数。
+11. array：数组的辅助函数和结构体。
+12. ascii：主要就一个函数escape_default用于ascii转义
+13. borrow：不可变借用和可变借用trait。实现borrow()可借用。
+14. cell：可共享可变封装，提供了几种不同的Cell结构体。依托于UnsafeCell。
+15. char：char的一些辅助函数。
+16. clone：显式复制。
+17. cmp：排序和比较。Eq 和 PartialEq 是 traits，允许您分别定义值之间的完全相等和部分相等。 实现它们会使 == 和 != 运算符重载。Ord 和 PartialOrd 是 traits，允许您分别定义值之间的全部排序和部分排序。
+18. convert：类型转换。AsMut、AsRef、From、Into。
+19. default：提供Default的trait。
+20. ffi：提供了c指针和可变参数ABI实现
+21. fmt：格式化字符串。提供了Binary、Debug、Display、LowerExp、LowerHex、Octal、Pointer、UpperExp、UpperHex各种格式的。以及写入缓冲区的write。
+22. future：异步模块。future 是一个可能尚未完成计算的值。 这种异步值使得，线程在等待值变为可用时，可以继续执行有用的工作。future 的核心方法 poll 试图将 future 解析为最终值。 如果值未准备好，则此方法不会阻塞。 取而代之的是，如果有可能通过再次轮询来取得进一步的进展，则计划将当前任务唤醒。
+23. hash：哈希计算支持。
+24. hint：三个hint相关函数。
+25. iter：各种类型的迭代器。
+26. marker：Copy、Send、Sized、Sync、Unpin的trait。
+27. mem：一些函数，用于处理内存。ManuallyDrop包装器，用于禁止编译器自动调用 T 的析构函数。
+	1) forget关闭析构。forget 没有标记为 unsafe，因为 Rust 的安全保证不包括析构函数将始终运行的保证。从安全代码允许 mem::forget 不会从根本上改变 Rust 的安全保证。
+	2) drop显式析构
+	3) align_of获取对齐。align_of返回 ABI 要求的类型的最小对齐方式、align_of_val返回 ABI 所需的 val 指向的值的类型的最小对齐方式。
+	4) size_of获取类型大小。size_of返回类型的大小 (以字节为单位)，size_of_val返回所指向的值的大小 (以字节为单位)。
+	5) discriminant返回一个唯一标识 v 中的枚举变体的值。
+	6) needs_drop如果需要丢弃则返回true
+	7) replace将 src 移至引用的 dest，返回先前的 dest 值。
+	8) swap在两个可变位置交换值，而无需对其中一个进行初始化。
+	9) take用默认值 T 替换 dest，并返回以前的 dest 值。
+	10) transmute将一种类型的值的位重新解释为另一种类型。两种类型都必须具有相同的大小。
+	11) transmute_copy将 src 解释为具有 &U 类型，然后在不移动所包含的值的情况下读取 src。
+	12) zeroed返回由全零字节模式表示的 T 类型的值。
+28. num：内置数字类型，非零数之类的。
+29. ops：各种运算符重载。
+30. option：可选值。
+	1) 如果 Option 分别为 Some 或 None，则 is_some 和 is_none 方法返回 true。
+	2) and_then 和 or_else 方法将函数作为输入，并且仅在需要产生新值时才评估函数。只有 and_then 方法可以生成具有与 Option<T> 不同的内部类型 U 的 Option<U> 值。
+31. panic：panic支持。一些栈回溯的内容。
+32. pin：结构体Pin<P>这是一种指针的包装，该指针使该指针 “pin” 成为其值，从而防止该指针引用的值被移动，除非它实现 Unpin。
+33. ptr：裸指针。
+34. result：和option类似。
+35. slice：切片管理和操作。
+36. str：字符串相关类型。
+37. sync：内部有个atomic模块，关于锁与内存共享。
+38. task：异步处理相关结构。
+39. time：包含一个时间跨度的结构体Duration。
+
+std库 比core多了backtrace、boxed、collections、env、error、fs、io、net、os、path、process、rc、vec
