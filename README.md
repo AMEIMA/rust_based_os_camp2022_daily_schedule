@@ -347,3 +347,12 @@ core库部分杂记：
 39. time：包含一个时间跨度的结构体Duration。
 
 std库 比core多了backtrace、boxed、collections、env、error、fs、io、net、os、path、process、rc、vec
+
+## 2022/7/14
+
+今天试着把用Nim写的毕设Trep移植到Rust上来，作为Rust学习的最后一个练手。今天完成了大部分的lexer，工作量还是挺大的，要尽快弄完然后开始os-lab了。
+
+今天发现的一些问题：
+
+1. 如果变量名太长，可能是模块层次化做的不到位，要再细分层次和模块。
+2. 父模块中的名称也不是直接用的，还是要用super路径或者use super。
