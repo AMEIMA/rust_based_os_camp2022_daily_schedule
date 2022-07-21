@@ -1,6 +1,6 @@
 # 2022年开源操作系统训练营日记
 ## 2022/7/4
-今天做了Rust-lang Lab Test based on Rustlings前65个训练，尽量不看rustc的错误提示直接分析代码。
+今天是加入训练营的第一天，做了Rust-lang Lab Test based on Rustlings前65个训练，尽量不看rustc的错误提示直接分析代码。
 
 做题的过程中发现了一些之前没有关注到的知识：
 
