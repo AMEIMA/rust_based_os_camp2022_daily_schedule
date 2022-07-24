@@ -528,3 +528,11 @@ std库 比core多了backtrace、boxed、collections、env、error、fs、io、ne
 ## 2022/7/22
 
 继续做test4，今天终于理顺了实验已有的代码，明天开始写作业
+
+## 2022/7/23
+
+把test4实验部分代码完成了，明天debug
+
+## 2022/7/24
+
+花了一整天终于把bug处理完了，明天开下一个lab
